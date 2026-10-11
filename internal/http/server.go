@@ -1,5 +1,5 @@
-// Package http provides HTTP server functionality for the oil price scraper
-// and the weather scraper.
+// Package http provides HTTP server functionality for the oil and weather
+// scrapers.
 //
 // baseServer, commonMetrics and the small helpers in status.go hold everything
 // the two scrapers share. Server and WeatherServer, in oil.go and weather.go,

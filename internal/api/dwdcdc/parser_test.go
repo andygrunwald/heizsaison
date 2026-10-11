@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/numeric"
+	"github.com/andygrunwald/heizsaison/internal/numeric"
 )
 
 func TestParseDataFile(t *testing.T) {

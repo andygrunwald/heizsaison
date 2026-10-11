@@ -3,16 +3,16 @@
 
 version: 2
 
-project_name: oilscraper
+project_name: heizsaison
 
 before:
   hooks:
     - go mod tidy
 
 builds:
-  - id: oilscraper
-    main: ./cmd/oilscraper
-    binary: oilscraper
+  - id: heizsaison-oil
+    main: ./cmd/heizsaison-oil
+    binary: heizsaison-oil
     env:
       - CGO_ENABLED=0
     goos:
@@ -26,9 +26,9 @@ builds:
       - -X main.Version={{.Version}}
       - -X main.Commit={{.Commit}}
       - -X main.BuildDate={{.Date}}
-  - id: weatherscraper
-    main: ./cmd/weatherscraper
-    binary: weatherscraper
+  - id: heizsaison-weather
+    main: ./cmd/heizsaison-weather
+    binary: heizsaison-weather
     env:
       - CGO_ENABLED=0
     goos:
@@ -70,10 +70,11 @@ changelog:
       - Merge branch
 
 dockers_v2:
-  - images:
-      - "ghcr.io/andygrunwald/oil-price-scraper"
+  - id: heizsaison-oil
+    images:
+      - "ghcr.io/andygrunwald/heizsaison-oil"
     ids:
-      - oilscraper
+      - heizsaison-oil
     tags:
       - "{{ .Version }}"
       - "{{ .Major }}.{{ .Minor }}"
@@ -86,14 +87,15 @@ dockers_v2:
       COMMIT: "{{ .Commit }}"
       BUILD_DATE: "{{ .Date }}"
     labels:
-      "org.opencontainers.image.title": "oil-price-scraper"
+      "org.opencontainers.image.title": "heizsaison-oil"
       "org.opencontainers.image.version": "{{ .Version }}"
       "org.opencontainers.image.revision": "{{ .FullCommit }}"
       "org.opencontainers.image.source": "{{ .GitURL }}"
-  - images:
-      - "ghcr.io/andygrunwald/weather-scraper"
+  - id: heizsaison-weather
+    images:
+      - "ghcr.io/andygrunwald/heizsaison-weather"
     ids:
-      - weatherscraper
+      - heizsaison-weather
     dockerfile: Dockerfile.weather
     tags:
       - "{{ .Version }}"
@@ -107,7 +109,7 @@ dockers_v2:
       COMMIT: "{{ .Commit }}"
       BUILD_DATE: "{{ .Date }}"
     labels:
-      "org.opencontainers.image.title": "weather-scraper"
+      "org.opencontainers.image.title": "heizsaison-weather"
       "org.opencontainers.image.version": "{{ .Version }}"
       "org.opencontainers.image.revision": "{{ .FullCommit }}"
       "org.opencontainers.image.source": "{{ .GitURL }}"
@@ -115,7 +117,7 @@ dockers_v2:
 release:
   github:
     owner: andygrunwald
-    name: oil-price-scraper
+    name: heizsaison
   draft: false
   prerelease: auto
   mode: replace

@@ -16,8 +16,8 @@ type commonMetrics struct {
 }
 
 // newCommonMetrics creates and registers the shared metrics. Prometheus joins
-// namespace and name with an underscore, so a namespace of "oilscraper" yields
-// oilscraper_api_requests_total and so on.
+// namespace and name with an underscore, so a namespace of "heizsaison_oil"
+// yields heizsaison_oil_api_requests_total and so on.
 func newCommonMetrics(namespace string) commonMetrics {
 	return commonMetrics{
 		APIRequestsTotal: promauto.NewCounterVec(

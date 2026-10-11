@@ -11,25 +11,19 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/api/brightsky"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/dwdcdc"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/openmeteo"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/openweather"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/visualcrossing"
-	"github.com/andygrunwald/oil-price-scraper/internal/database"
-	"github.com/andygrunwald/oil-price-scraper/internal/http"
-	"github.com/andygrunwald/oil-price-scraper/internal/scheduler"
-	"github.com/andygrunwald/oil-price-scraper/internal/scraper"
+	"github.com/andygrunwald/heizsaison/internal/api/heizoel24"
+	"github.com/andygrunwald/heizsaison/internal/api/hoyer"
+	"github.com/andygrunwald/heizsaison/internal/database"
+	"github.com/andygrunwald/heizsaison/internal/http"
+	"github.com/andygrunwald/heizsaison/internal/scheduler"
+	"github.com/andygrunwald/heizsaison/internal/scraper"
 )
 
 func runCmd() *cobra.Command {
-	var visualCrossingAPIKey string
-	var openWeatherAPIKey string
-
 	cmd := &cobra.Command{
 		Use:   "run",
-		Short: "Start the continuous weather scraper service",
-		Long:  "Starts the weather scraper with an internal scheduler that runs daily at the specified hour.",
+		Short: "Start the continuous scraper service",
+		Long:  "Starts the oil price scraper with an internal scheduler that runs daily at the specified hour.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			logger := setupLogger()
 
@@ -37,16 +31,8 @@ func runCmd() *cobra.Command {
 				return fmt.Errorf("--postgres-dsn is required")
 			}
 
-			if cfg.Latitude == 0 && cfg.Longitude == 0 {
-				return fmt.Errorf("--latitude and --longitude are required")
-			}
-
-			// Override config from flags
-			if visualCrossingAPIKey != "" {
-				cfg.VisualCrossingAPIKey = visualCrossingAPIKey
-			}
-			if openWeatherAPIKey != "" {
-				cfg.OpenWeatherAPIKey = openWeatherAPIKey
+			if cfg.ZipCode == "" {
+				return fmt.Errorf("--zip-code is required")
 			}
 
 			// Parse providers
@@ -61,9 +47,7 @@ func runCmd() *cobra.Command {
 				Str("httpAddr", cfg.HTTPAddr).
 				Int("scrapeHour", cfg.ScrapeHour).
 				Strs("providers", cfg.Providers).
-				Float64("latitude", cfg.Latitude).
-				Float64("longitude", cfg.Longitude).
-				Msg("starting weather scraper")
+				Msg("starting heizsaison-oil")
 
 			// Connect to database
 			db, err := database.New(cfg.PostgresDSN, logger)
@@ -77,29 +61,15 @@ func runCmd() *cobra.Command {
 			}()
 
 			// Create scraper
-			s := scraper.NewWeather(db, cfg.StoreRawResponse, cfg.Latitude, cfg.Longitude, logger)
+			s := scraper.New(db, cfg.StoreRawResponse, logger)
 
 			// Register providers
 			for _, p := range cfg.Providers {
 				switch p {
-				case "openmeteo":
-					s.RegisterProvider(openmeteo.New(logger))
-				case "brightsky":
-					s.RegisterProvider(brightsky.New(logger))
-				case "visualcrossing":
-					if cfg.VisualCrossingAPIKey == "" {
-						logger.Warn().Msg("Visual Crossing API key not set, skipping provider")
-						continue
-					}
-					s.RegisterProvider(visualcrossing.New(logger, cfg.VisualCrossingAPIKey))
-				case "openweather":
-					if cfg.OpenWeatherAPIKey == "" {
-						logger.Warn().Msg("OpenWeather API key not set, skipping provider")
-						continue
-					}
-					s.RegisterProvider(openweather.New(logger, cfg.OpenWeatherAPIKey, 1, 5))
-				case "dwdcdc":
-					s.RegisterProvider(dwdcdc.New(logger))
+				case "heizoel24":
+					s.RegisterProvider(heizoel24.New(logger))
+				case "hoyer":
+					s.RegisterProvider(hoyer.New(logger, cfg.ZipCode, cfg.OrderAmount))
 				default:
 					logger.Warn().Str("provider", p).Msg("unknown provider, skipping")
 				}
@@ -109,7 +79,7 @@ func runCmd() *cobra.Command {
 			sched := scheduler.New(s, cfg.ScrapeHour, logger)
 
 			// Create HTTP server
-			httpServer := http.NewWeatherServer(cfg.HTTPAddr, s, sched, db, logger)
+			httpServer := http.NewServer(cfg.HTTPAddr, s, sched, db, logger)
 
 			// Wire Prometheus metrics to scraper
 			s.SetPrometheusMetrics(httpServer.Metrics())
@@ -159,8 +129,6 @@ func runCmd() *cobra.Command {
 
 	cmd.Flags().IntVar(&cfg.ScrapeHour, "scrape-hour", cfg.ScrapeHour, "Hour of day (0-23) to scrape")
 	cmd.Flags().StringSliceVar(&cfg.Providers, "providers", cfg.Providers, "Comma-separated list of providers")
-	cmd.Flags().StringVar(&visualCrossingAPIKey, "visual-crossing-api-key", "", "Visual Crossing API key")
-	cmd.Flags().StringVar(&openWeatherAPIKey, "openweather-api-key", "", "OpenWeather API key")
 
 	return cmd
 }

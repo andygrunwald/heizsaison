@@ -1,4 +1,4 @@
-// Package main provides the entry point for the weather scraper CLI.
+// Package main provides the entry point for the heizsaison-weather CLI.
 package main
 
 import (
@@ -9,7 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/config"
+	"github.com/andygrunwald/heizsaison/internal/config"
 )
 
 var (
@@ -28,9 +28,9 @@ func main() {
 	cfg.LoadFromEnv()
 
 	rootCmd := &cobra.Command{
-		Use:   "weatherscraper",
-		Short: "Weather Scraper - Daily weather data collection for your location",
-		Long: `Weather Scraper is a service that scrapes daily weather data from various
+		Use:   "heizsaison-weather",
+		Short: "Heizsaison Weather - Daily weather data collection for your location",
+		Long: `heizsaison-weather is a service that scrapes daily weather data from various
 APIs and stores them in a PostgreSQL database for analysis and monitoring.
 
 Providers:

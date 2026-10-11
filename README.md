@@ -1,17 +1,18 @@
-# Oil Price Scraper
+# Heizsaison
 
 ```
-   ____  _ _   ____       _           ____
-  / __ \(_) | |  _ \ _ __(_) ___ ___ / ___|  ___ _ __ __ _ _ __   ___ _ __
- | |  | | | | | |_) | '__| |/ __/ _ \___ \ / __| '__/ _` | '_ \ / _ \ '__|
- | |__| | | | |  __/| |  | | (_|  __/___) | (__| | | (_| | |_) |  __/ |
-  \____/|_|_| |_|   |_|  |_|\___\___|____/ \___|_|  \__,_| .__/ \___|_|
-                                                         |_|
+ _   _      _               _                 
+| | | | ___(_)_______  __ _(_)___  ___  _ __  
+| |_| |/ _ \ |_  / __|/ _` | / __|/ _ \| '_ \ 
+|  _  |  __/ |/ /\__ \ (_| | \__ \ (_) | | | |
+|_| |_|\___|_/___|___/\__,_|_|___/\___/|_| |_|
 ```
 
 **Never miss a dip in heating oil prices again.**
 
-Two Go services that collect daily data and write it into one PostgreSQL database: `oilscraper` pulls heating oil prices from German APIs, and `weatherscraper` pulls weather observations for a single location. Heating oil demand tracks the weather, so keeping both in one database makes the interesting queries a join away.
+*Heizsaison* is German for "heating season" - the months when what you pay to stay warm depends on the weather.
+
+Two Go services that collect daily data and write it into one PostgreSQL database: `heizsaison-oil` pulls heating oil prices from German APIs, and `heizsaison-weather` pulls weather observations for a single location. Heating oil demand tracks the weather, so keeping both in one database makes the interesting queries a join away.
 
 ## Features
 
@@ -25,13 +26,13 @@ Two Go services that collect daily data and write it into one PostgreSQL databas
 ## Quick Start
 
 ```bash
-git clone https://github.com/andygrunwald/oil-price-scraper.git
-cd oil-price-scraper
+git clone https://github.com/andygrunwald/heizsaison.git
+cd heizsaison
 
 docker-compose up -d
 
-curl http://localhost:8080/status  # oilscraper
-curl http://localhost:8081/status  # weatherscraper
+curl http://localhost:8080/status  # heizsaison-oil
+curl http://localhost:8081/status  # heizsaison-weather
 ```
 
 ## Installation
@@ -40,24 +41,24 @@ curl http://localhost:8081/status  # weatherscraper
 
 ```bash
 docker run -d \
-  -e POSTGRES_DSN="postgres://user:password@host:5432/oil?sslmode=disable" \
+  -e POSTGRES_DSN="postgres://user:password@host:5432/heizsaison?sslmode=disable" \
   -e ZIP_CODE="47259" \
   -p 8080:8080 \
-  ghcr.io/andygrunwald/oil-price-scraper:latest
+  ghcr.io/andygrunwald/heizsaison-oil:latest
 
 docker run -d \
-  -e POSTGRES_DSN="postgres://user:password@host:5432/oil?sslmode=disable" \
+  -e POSTGRES_DSN="postgres://user:password@host:5432/heizsaison?sslmode=disable" \
   -e LATITUDE="51.4556" \
   -e LONGITUDE="6.7623" \
   -p 8081:8081 \
-  ghcr.io/andygrunwald/weather-scraper:latest
+  ghcr.io/andygrunwald/heizsaison-weather:latest
 ```
 
 ### Building from Source
 
 ```bash
-go install github.com/andygrunwald/oil-price-scraper/cmd/oilscraper@latest
-go install github.com/andygrunwald/oil-price-scraper/cmd/weatherscraper@latest
+go install github.com/andygrunwald/heizsaison/cmd/heizsaison-oil@latest
+go install github.com/andygrunwald/heizsaison/cmd/heizsaison-weather@latest
 ```
 
 ## Usage
@@ -73,21 +74,21 @@ Both binaries share the same four subcommands:
 
 ```bash
 # Collect oil prices daily
-oilscraper run \
-  --postgres-dsn "postgres://user:password@localhost:5432/oil?sslmode=disable" \
+heizsaison-oil run \
+  --postgres-dsn "postgres://user:password@localhost:5432/heizsaison?sslmode=disable" \
   --zip-code "47259" \
   --providers heizoel24,hoyer
 
 # Collect weather daily
-weatherscraper run \
-  --postgres-dsn "postgres://user:password@localhost:5432/oil?sslmode=disable" \
+heizsaison-weather run \
+  --postgres-dsn "postgres://user:password@localhost:5432/heizsaison?sslmode=disable" \
   --latitude 51.4556 \
   --longitude 6.7623 \
   --providers openmeteo,brightsky
 
 # Import a year of history
-oilscraper backfill \
-  --postgres-dsn "postgres://user:password@localhost:5432/oil?sslmode=disable" \
+heizsaison-oil backfill \
+  --postgres-dsn "postgres://user:password@localhost:5432/heizsaison?sslmode=disable" \
   --zip-code "47259" \
   --provider heizoel24 \
   --from 2024-01-01 --to 2024-12-31

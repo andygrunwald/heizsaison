@@ -11,7 +11,7 @@ func versionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Print version information",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Weather Scraper\n")
+			fmt.Printf("Heizsaison Weather\n")
 			fmt.Printf("  Version:    %s\n", Version)
 			fmt.Printf("  Commit:     %s\n", Commit)
 			fmt.Printf("  Build Date: %s\n", BuildDate)

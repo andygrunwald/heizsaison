@@ -7,9 +7,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/api"
-	"github.com/andygrunwald/oil-price-scraper/internal/database"
-	"github.com/andygrunwald/oil-price-scraper/internal/models"
+	"github.com/andygrunwald/heizsaison/internal/api"
+	"github.com/andygrunwald/heizsaison/internal/database"
+	"github.com/andygrunwald/heizsaison/internal/models"
 )
 
 // PrometheusMetrics defines the interface for recording Prometheus metrics.
@@ -62,7 +62,7 @@ func New(db *database.DB, storeRawResponse bool, logger zerolog.Logger) *Scraper
 		providers:        make(map[string]api.Provider),
 		providerMetrics:  make(map[string]*Metrics),
 		storeRawResponse: storeRawResponse,
-		logger:           logger.With().Str("component", "scraper").Logger(),
+		logger:           logger.With().Str("component", "oil").Logger(),
 	}
 }
 

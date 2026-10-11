@@ -1,4 +1,4 @@
--- Oil Price Scraper - Oil Price Schema
+-- Heizsaison - Oil Price Schema
 -- Creates the oil_prices table for PostgreSQL
 
 CREATE TABLE IF NOT EXISTS oil_prices (

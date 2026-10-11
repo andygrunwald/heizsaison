@@ -1,5 +1,5 @@
 // Package config provides configuration structures and loading for the oil
-// price scraper and the weather scraper.
+// and weather scrapers.
 //
 // Common holds everything both scrapers need. Oil and Weather embed it and add
 // their own settings, so a shared setting is declared and parsed exactly once.

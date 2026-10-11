@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/database"
-	"github.com/andygrunwald/oil-price-scraper/internal/scheduler"
+	"github.com/andygrunwald/heizsaison/internal/database"
+	"github.com/andygrunwald/heizsaison/internal/scheduler"
 )
 
 // schedulerStatus reports the three scheduler fields both status responses

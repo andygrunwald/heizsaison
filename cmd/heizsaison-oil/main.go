@@ -1,4 +1,4 @@
-// Package main provides the entry point for the oil price scraper CLI.
+// Package main provides the entry point for the heizsaison-oil CLI.
 package main
 
 import (
@@ -9,7 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/config"
+	"github.com/andygrunwald/heizsaison/internal/config"
 )
 
 var (
@@ -28,10 +28,10 @@ func main() {
 	cfg.LoadFromEnv()
 
 	rootCmd := &cobra.Command{
-		Use:   "oilscraper",
-		Short: "Oil Price Scraper - Never miss a dip in heating oil prices again",
-		Long: `Oil Price Scraper is a service that scrapes heating oil prices from various
-German APIs and stores them in a MySQL database for analysis and monitoring.
+		Use:   "heizsaison-oil",
+		Short: "Heizsaison Oil - Never miss a dip in heating oil prices again",
+		Long: `heizsaison-oil is a service that scrapes heating oil prices from various
+German APIs and stores them in a PostgreSQL database for analysis and monitoring.
 
 Features:
   - Multiple API providers (HeizOel24, Hoyer)

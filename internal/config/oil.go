@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-// Oil holds all configuration for the oil price scraper.
+// Oil holds all configuration for the oil scraper.
 type Oil struct {
 	Common
 	// Zip code for local price APIs

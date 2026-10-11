@@ -11,10 +11,10 @@ ARG BUILD_DATE=unknown
 ARG TARGETPLATFORM
 
 # Copy the pre-built binary from goreleaser's build context
-COPY ${TARGETPLATFORM}/oilscraper /oilscraper
+COPY ${TARGETPLATFORM}/heizsaison-oil /heizsaison-oil
 
 # Expose metrics/status port
 EXPOSE 8080
 
-ENTRYPOINT ["/oilscraper"]
+ENTRYPOINT ["/heizsaison-oil"]
 CMD ["run"]

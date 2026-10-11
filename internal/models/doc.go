@@ -1,3 +1,3 @@
 // Package models provides shared data types
-// for the oil price scraper and weather scraper.
+// for the oil and weather scrapers.
 package models

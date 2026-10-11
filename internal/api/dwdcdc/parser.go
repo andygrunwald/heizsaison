@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/models"
-	"github.com/andygrunwald/oil-price-scraper/internal/useragent"
+	"github.com/andygrunwald/heizsaison/internal/models"
+	"github.com/andygrunwald/heizsaison/internal/useragent"
 )
 
 // dailyRecord holds one parsed row from the DWD daily KL data file.

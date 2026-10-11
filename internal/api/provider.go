@@ -11,7 +11,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/models"
+	"github.com/andygrunwald/heizsaison/internal/models"
 )
 
 // commonProvider is the part of the provider contract that does not depend on

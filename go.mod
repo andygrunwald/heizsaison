@@ -1,4 +1,4 @@
-module github.com/andygrunwald/oil-price-scraper
+module github.com/andygrunwald/heizsaison
 
 go 1.26.0
 

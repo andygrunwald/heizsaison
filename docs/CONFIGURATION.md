@@ -1,6 +1,6 @@
 # Configuration
 
-Every setting on both scrapers can be given as a command-line flag or an environment variable. This document is the complete reference for `oilscraper` and `weatherscraper`.
+Every setting on both scrapers can be given as a command-line flag or an environment variable. This document is the complete reference for `heizsaison-oil` and `heizsaison-weather`.
 
 The two binaries share a common configuration core and add their own settings on top, so most flags below are identical on both. For the logging flags in detail, see [DEBUG_LOGGING.md](DEBUG_LOGGING.md).
 
@@ -26,16 +26,16 @@ Persistent flags, available on every subcommand of both binaries.
 | `--log-level` | `LOG_LEVEL` | `info` | Log level (`trace`, `debug`, `info`, `warn`, `error`) |
 | `--log-format` | `LOG_FORMAT` | `json` | Log format (`json`, `console`) |
 | `--store-raw-response` | `STORE_RAW_RESPONSE` | `false` | Store raw API responses in the database |
-| `--http-addr` | `HTTP_ADDR` | `:8080` / `:8081` | HTTP server address. `:8080` for `oilscraper`, `:8081` for `weatherscraper` |
+| `--http-addr` | `HTTP_ADDR` | `:8080` / `:8081` | HTTP server address. `:8080` for `heizsaison-oil`, `:8081` for `heizsaison-weather` |
 
-## `oilscraper` Flags
+## `heizsaison-oil` Flags
 
 | Flag | Env Variable | Default | Description |
 |------|--------------|---------|-------------|
 | `--zip-code` | `ZIP_CODE` | - | Zip code for regional price APIs (required) |
 | `--order-amount` | `ORDER_AMOUNT` | `3000` | Order amount in liters |
 
-## `weatherscraper` Flags
+## `heizsaison-weather` Flags
 
 | Flag | Env Variable | Default | Description |
 |------|--------------|---------|-------------|
@@ -48,19 +48,19 @@ Persistent flags, available on every subcommand of both binaries.
 
 | Flag | Env Variable | Default | Description |
 |------|--------------|---------|-------------|
-| `--scrape-hour` | `SCRAPE_HOUR` | `6` / `7` | Hour of day (0-23) to scrape. `run` only. `6` for `oilscraper`, `7` for `weatherscraper` |
+| `--scrape-hour` | `SCRAPE_HOUR` | `6` / `7` | Hour of day (0-23) to scrape. `run` only. `6` for `heizsaison-oil`, `7` for `heizsaison-weather` |
 | `--providers` | `PROVIDERS` | `heizoel24,hoyer` / `openmeteo` | Comma-separated list of providers to enable |
 
 Valid provider names:
 
 | Binary | Providers |
 |--------|-----------|
-| `oilscraper` | `heizoel24`, `hoyer` |
-| `weatherscraper` | `openmeteo`, `brightsky`, `visualcrossing`, `openweather`, `dwdcdc` |
+| `heizsaison-oil` | `heizoel24`, `hoyer` |
+| `heizsaison-weather` | `openmeteo`, `brightsky`, `visualcrossing`, `openweather`, `dwdcdc` |
 
 See [OIL_PROVIDERS.md](OIL_PROVIDERS.md) and [WEATHER_PROVIDERS.md](WEATHER_PROVIDERS.md) for what each one delivers.
 
-## API Keys (`weatherscraper`)
+## API Keys (`heizsaison-weather`)
 
 Available on `run`, `scrape` and `backfill`. Only needed for the two providers that require them.
 
@@ -89,10 +89,10 @@ The published images take the same environment variables:
 
 ```bash
 docker run -d \
-  -e POSTGRES_DSN="postgres://user:password@host:5432/oil?sslmode=disable" \
+  -e POSTGRES_DSN="postgres://user:password@host:5432/heizsaison?sslmode=disable" \
   -e ZIP_CODE="47259" \
   -p 8080:8080 \
-  ghcr.io/andygrunwald/oil-price-scraper:latest
+  ghcr.io/andygrunwald/heizsaison-oil:latest
 ```
 
 `docker-compose.yml` configures both services this way. It is also where the `47259` zip code and the `51.4556` / `6.7623` coordinates come from - those are Compose values, not built-in defaults.
@@ -102,8 +102,8 @@ docker run -d \
 ## Gotchas
 
 - **`--min-delay` and `--max-delay` only affect OpenWeather.** It is the one provider that backfills day by day and sleeps between requests. Every other provider fetches the whole range in a single call, so both scrapers accept the two values and never use them.
-- **`--zip-code` is required even without Hoyer.** `oilscraper` rejects an empty zip code on `run`, `scrape` and `backfill`, whether or not the Hoyer provider is enabled.
-- **The coordinate check is an AND.** `weatherscraper` only complains when latitude *and* longitude are both `0`, so `--latitude 51.4556` on its own passes validation and silently observes longitude `0`.
+- **`--zip-code` is required even without Hoyer.** `heizsaison-oil` rejects an empty zip code on `run`, `scrape` and `backfill`, whether or not the Hoyer provider is enabled.
+- **The coordinate check is an AND.** `heizsaison-weather` only complains when latitude *and* longitude are both `0`, so `--latitude 51.4556` on its own passes validation and silently observes longitude `0`.
 - **`STORE_RAW_RESPONSE` is matched case-insensitively against `true`.** Anything else, `1` included, means false.
 - **Unparseable numeric environment variables are ignored silently.** A bad `SCRAPE_HOUR`, `LATITUDE`, `LONGITUDE` or `ORDER_AMOUNT` leaves the default in place without a warning. `SCRAPE_HOUR` is additionally ignored outside 0-23.
 - **`--store-raw-response` only controls the database column.** The `/status` endpoint reports `last_raw_response` either way - see [HTTP_ENDPOINTS.md](HTTP_ENDPOINTS.md).

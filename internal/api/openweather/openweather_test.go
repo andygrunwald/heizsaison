@@ -8,7 +8,7 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/numeric"
+	"github.com/andygrunwald/heizsaison/internal/numeric"
 )
 
 func TestMapResponse(t *testing.T) {

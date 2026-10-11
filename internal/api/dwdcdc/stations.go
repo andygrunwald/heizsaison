@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/useragent"
+	"github.com/andygrunwald/heizsaison/internal/useragent"
 )
 
 const (

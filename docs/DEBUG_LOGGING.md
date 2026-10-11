@@ -2,7 +2,7 @@
 
 Both scrapers log at `info` level in JSON format by default. This document describes how to switch to `debug`, which reveals the outbound API requests, the per-record insert and skip decisions, and other details that are otherwise hidden.
 
-Logging is handled by [zerolog](https://github.com/rs/zerolog). The `oilscraper` and `weatherscraper` binaries are configured identically. For every other setting, see [CONFIGURATION.md](CONFIGURATION.md).
+Logging is handled by [zerolog](https://github.com/rs/zerolog). The `heizsaison-oil` and `heizsaison-weather` binaries are configured identically. For every other setting, see [CONFIGURATION.md](CONFIGURATION.md).
 
 ---
 
@@ -12,10 +12,10 @@ Logging is handled by [zerolog](https://github.com/rs/zerolog). The `oilscraper`
 
 ```bash
 # Via flags
-oilscraper scrape --log-level debug --log-format console
+heizsaison-oil scrape --log-level debug --log-format console
 
 # Via environment variables
-LOG_LEVEL=debug LOG_FORMAT=console weatherscraper run
+LOG_LEVEL=debug LOG_FORMAT=console heizsaison-weather run
 ```
 
 | Setting | Flag | Env Variable | Default | Values |
@@ -47,7 +47,7 @@ For the published images, pass the environment variables:
 docker run \
   -e LOG_LEVEL=debug \
   -e LOG_FORMAT=console \
-  ghcr.io/andygrunwald/oil-price-scraper
+  ghcr.io/andygrunwald/heizsaison-oil
 ```
 
 ---
@@ -65,10 +65,10 @@ docker run \
 
 ## Filtering
 
-Every component logs with a `component` field (`scraper`, `weatherscraper`, `database`, `scheduler`, `http`), and every API provider with a `provider` field. In JSON format, filter on them with `jq`:
+Every component logs with a `component` field (`oil`, `weather`, `database`, `scheduler`, `http`), and every API provider with a `provider` field. In JSON format, filter on them with `jq`:
 
 ```bash
-oilscraper scrape --log-level debug | jq 'select(.component == "database")'
+heizsaison-oil scrape --log-level debug | jq 'select(.component == "database")'
 ```
 
 ---

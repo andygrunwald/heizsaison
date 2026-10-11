@@ -7,13 +7,13 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/api/brightsky"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/dwdcdc"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/openmeteo"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/openweather"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/visualcrossing"
-	"github.com/andygrunwald/oil-price-scraper/internal/database"
-	"github.com/andygrunwald/oil-price-scraper/internal/scraper"
+	"github.com/andygrunwald/heizsaison/internal/api/brightsky"
+	"github.com/andygrunwald/heizsaison/internal/api/dwdcdc"
+	"github.com/andygrunwald/heizsaison/internal/api/openmeteo"
+	"github.com/andygrunwald/heizsaison/internal/api/openweather"
+	"github.com/andygrunwald/heizsaison/internal/api/visualcrossing"
+	"github.com/andygrunwald/heizsaison/internal/database"
+	"github.com/andygrunwald/heizsaison/internal/scraper"
 )
 
 func scrapeCmd() *cobra.Command {

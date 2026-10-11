@@ -7,10 +7,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/api/heizoel24"
-	"github.com/andygrunwald/oil-price-scraper/internal/api/hoyer"
-	"github.com/andygrunwald/oil-price-scraper/internal/database"
-	"github.com/andygrunwald/oil-price-scraper/internal/scraper"
+	"github.com/andygrunwald/heizsaison/internal/api/heizoel24"
+	"github.com/andygrunwald/heizsaison/internal/api/hoyer"
+	"github.com/andygrunwald/heizsaison/internal/database"
+	"github.com/andygrunwald/heizsaison/internal/scraper"
 )
 
 func scrapeCmd() *cobra.Command {

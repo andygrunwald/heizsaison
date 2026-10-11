@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/models"
+	"github.com/andygrunwald/heizsaison/internal/models"
 )
 
 // InsertPrice inserts a new oil price record into the database.

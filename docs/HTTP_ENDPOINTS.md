@@ -2,13 +2,13 @@
 
 Both scrapers start an HTTP server alongside the `run` command and serve the same three routes: `/metrics`, `/status` and `/health`. Only the `/status` payload and the metric name prefix differ between them.
 
-The address is set with `--http-addr` / `HTTP_ADDR` and defaults to `:8080` for `oilscraper` and `:8081` for `weatherscraper`. See [CONFIGURATION.md](CONFIGURATION.md) for the full flag reference.
+The address is set with `--http-addr` / `HTTP_ADDR` and defaults to `:8080` for `heizsaison-oil` and `:8081` for `heizsaison-weather`. See [CONFIGURATION.md](CONFIGURATION.md) for the full flag reference.
 
 ---
 
 ## `/metrics` - Prometheus Metrics
 
-Prometheus exposition format, served by `promhttp`. Every metric is prefixed with the scraper's namespace: `oilscraper_` or `weatherscraper_`.
+Prometheus exposition format, served by `promhttp`. Every metric is prefixed with the scraper's namespace: `heizsaison_oil_` or `heizsaison_weather_`.
 
 ### Shared Metrics
 
@@ -25,20 +25,20 @@ Both scrapers export these four with identical types, labels and help text:
 
 | Metric | Type | Labels | Description |
 |--------|------|--------|-------------|
-| `oilscraper_current_price_eur` | Gauge | `provider`, `scope`, `product_type` | Current oil price in EUR per 100L |
-| `oilscraper_prices_stored_total` | Gauge | `provider` | Total number of prices stored in the database by provider |
-| `weatherscraper_current_temperature_celsius` | Gauge | `provider` | Current temperature in Celsius |
-| `weatherscraper_observations_stored_total` | Gauge | `provider` | Total number of observations stored in the database by provider |
+| `heizsaison_oil_current_price_eur` | Gauge | `provider`, `scope`, `product_type` | Current oil price in EUR per 100L |
+| `heizsaison_oil_prices_stored_total` | Gauge | `provider` | Total number of prices stored in the database by provider |
+| `heizsaison_weather_current_temperature_celsius` | Gauge | `provider` | Current temperature in Celsius |
+| `heizsaison_weather_observations_stored_total` | Gauge | `provider` | Total number of observations stored in the database by provider |
 
 ### Example
 
 ```
-oilscraper_api_requests_total{provider="heizoel24",status="success"} 365
-oilscraper_api_request_duration_seconds_bucket{provider="heizoel24",le="0.25"} 340
-oilscraper_last_scrape_timestamp{provider="heizoel24"} 1.7683968e+09
-oilscraper_db_operations_total{operation="insert",status="success"} 1234
-oilscraper_current_price_eur{provider="heizoel24",scope="national",product_type="standard"} 97.81
-oilscraper_prices_stored_total{provider="heizoel24"} 1234
+heizsaison_oil_api_requests_total{provider="heizoel24",status="success"} 365
+heizsaison_oil_api_request_duration_seconds_bucket{provider="heizoel24",le="0.25"} 340
+heizsaison_oil_last_scrape_timestamp{provider="heizoel24"} 1.7683968e+09
+heizsaison_oil_db_operations_total{operation="insert",status="success"} 1234
+heizsaison_oil_current_price_eur{provider="heizoel24",scope="national",product_type="standard"} 97.81
+heizsaison_oil_prices_stored_total{provider="heizoel24"} 1234
 ```
 
 The standard Go runtime and process collectors (`go_goroutines`, `go_memstats_*`, `process_*`) are registered by default and exported alongside these.
@@ -49,7 +49,7 @@ The standard Go runtime and process collectors (`go_goroutines`, `go_memstats_*`
 
 Returns `200 OK` with a JSON snapshot of the scheduler, every registered provider and the database. Provider statistics are in-memory counters, so they reset when the process restarts.
 
-### `oilscraper`
+### `heizsaison-oil`
 
 ```json
 {
@@ -77,7 +77,7 @@ Returns `200 OK` with a JSON snapshot of the scheduler, every registered provide
 }
 ```
 
-### `weatherscraper`
+### `heizsaison-weather`
 
 ```json
 {
@@ -116,8 +116,8 @@ Returns `200 OK` with a JSON snapshot of the scheduler, every registered provide
 | `last_scheduled_scrape_at` | Last scrape the scheduler triggered. Omitted before the first run |
 | `providers.<name>.last_scrape_success` | Outcome of the most recent attempt |
 | `providers.<name>.last_response_time_ms` | Duration of the most recent API call |
-| `providers.<name>.last_price` | Latest price in EUR per 100L (`oilscraper`) |
-| `providers.<name>.last_temperature` | Latest temperature in Celsius (`weatherscraper`). Omitted when unset |
+| `providers.<name>.last_price` | Latest price in EUR per 100L (`heizsaison-oil`) |
+| `providers.<name>.last_temperature` | Latest temperature in Celsius (`heizsaison-weather`). Omitted when unset |
 | `providers.<name>.last_error` | Error message of the most recent failure, `null` after a success |
 | `providers.<name>.last_raw_response` | Raw API response of the most recent scrape, truncated at 10000 characters. Omitted when the provider returned none |
 | `database.connected` | Result of a live `Ping()` against PostgreSQL |

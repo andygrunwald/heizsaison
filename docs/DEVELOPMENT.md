@@ -25,8 +25,8 @@ How to build, test and release the two scrapers. For the settings they accept on
 | `make fmt-check` | Fail if any Go file is not gofmt'ed |
 | `make vet` | Run `go vet` |
 | `make staticcheck` | Run the staticcheck analyzer |
-| `make build-oilscraper` | Compile `oilscraper` |
-| `make build-weatherscraper` | Compile `weatherscraper` |
+| `make build-oil` | Compile `heizsaison-oil` |
+| `make build-weather` | Compile `heizsaison-weather` |
 | `make build-all` | Compile both |
 
 ---
@@ -41,8 +41,8 @@ docker-compose up -d postgres
 
 ```bash
 # Oil prices
-go run ./cmd/oilscraper run \
-  --postgres-dsn "postgres://oilscraper:oilscraper@localhost:5432/oil?sslmode=disable" \
+go run ./cmd/heizsaison-oil run \
+  --postgres-dsn "postgres://heizsaison:heizsaison@localhost:5432/heizsaison?sslmode=disable" \
   --zip-code "47259" \
   --log-format console \
   --log-level debug
@@ -50,8 +50,8 @@ go run ./cmd/oilscraper run \
 
 ```bash
 # Weather
-go run ./cmd/weatherscraper run \
-  --postgres-dsn "postgres://oilscraper:oilscraper@localhost:5432/oil?sslmode=disable" \
+go run ./cmd/heizsaison-weather run \
+  --postgres-dsn "postgres://heizsaison:heizsaison@localhost:5432/heizsaison?sslmode=disable" \
   --latitude 51.4556 \
   --longitude 6.7623 \
   --log-format console \
@@ -69,11 +69,11 @@ go run ./cmd/weatherscraper run \
 docker-compose up --build
 
 # Follow the logs of one service
-docker-compose logs -f oilscraper
-docker-compose logs -f weatherscraper
+docker-compose logs -f oil
+docker-compose logs -f weather
 
 # Open a database shell
-docker exec -it oilscraper-postgres psql -U oilscraper -d oil
+docker exec -it heizsaison-postgres psql -U heizsaison -d heizsaison
 ```
 
 Both application services already run at `LOG_LEVEL: debug` and `LOG_FORMAT: console`. For queries to run against the collected data, see [OIL_EXAMPLE_QUERIES.md](OIL_EXAMPLE_QUERIES.md) and [WEATHER_EXAMPLE_QUERIES.md](WEATHER_EXAMPLE_QUERIES.md).
@@ -91,6 +91,6 @@ Both application services already run at `LOG_LEVEL: debug` and `LOG_FORMAT: con
    ```
 
 3. Goreleaser then builds and publishes:
-   - `oilscraper` and `weatherscraper` binaries for Linux and macOS on amd64 and arm64
+   - `heizsaison-oil` and `heizsaison-weather` binaries for Linux and macOS on amd64 and arm64
    - A GitHub Release with a generated changelog
-   - `ghcr.io/andygrunwald/oil-price-scraper` and `ghcr.io/andygrunwald/weather-scraper`, each tagged with the full version, `major.minor` and `latest`
+   - `ghcr.io/andygrunwald/heizsaison-oil` and `ghcr.io/andygrunwald/heizsaison-weather`, each tagged with the full version, `major.minor` and `latest`

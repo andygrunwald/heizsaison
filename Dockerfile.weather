@@ -11,10 +11,10 @@ ARG BUILD_DATE=unknown
 ARG TARGETPLATFORM
 
 # Copy the pre-built binary from goreleaser's build context
-COPY ${TARGETPLATFORM}/weatherscraper /weatherscraper
+COPY ${TARGETPLATFORM}/heizsaison-weather /heizsaison-weather
 
 # Expose metrics/status port
 EXPOSE 8081
 
-ENTRYPOINT ["/weatherscraper"]
+ENTRYPOINT ["/heizsaison-weather"]
 CMD ["run"]

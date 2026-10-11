@@ -1,6 +1,6 @@
 # Binaries
-/oilscraper
-/weatherscraper
+/heizsaison-oil
+/heizsaison-weather
 *.exe
 *.exe~
 *.dll

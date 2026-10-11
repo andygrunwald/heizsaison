@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/models"
+	"github.com/andygrunwald/heizsaison/internal/models"
 )
 
 // InsertWeatherObservation inserts a new weather observation record into the database.

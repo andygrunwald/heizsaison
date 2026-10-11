@@ -9,16 +9,16 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/rs/zerolog"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/database"
-	"github.com/andygrunwald/oil-price-scraper/internal/models"
-	"github.com/andygrunwald/oil-price-scraper/internal/scheduler"
-	"github.com/andygrunwald/oil-price-scraper/internal/scraper"
+	"github.com/andygrunwald/heizsaison/internal/database"
+	"github.com/andygrunwald/heizsaison/internal/models"
+	"github.com/andygrunwald/heizsaison/internal/scheduler"
+	"github.com/andygrunwald/heizsaison/internal/scraper"
 )
 
-// oilNamespace prefixes every metric the oil price scraper exports.
-const oilNamespace = "oilscraper"
+// oilNamespace prefixes every metric the oil scraper exports.
+const oilNamespace = "heizsaison_oil"
 
-// Metrics holds all Prometheus metrics for the oil price scraper.
+// Metrics holds all Prometheus metrics for the oil scraper.
 type Metrics struct {
 	commonMetrics
 

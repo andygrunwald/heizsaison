@@ -52,18 +52,18 @@ func TestMetricNames(t *testing.T) {
 	}
 
 	want := map[string][]string{
-		"oilscraper_api_requests_total":               {"provider", "status"},
-		"oilscraper_api_request_duration_seconds":     {"provider"},
-		"oilscraper_last_scrape_timestamp":            {"provider"},
-		"oilscraper_db_operations_total":              {"operation", "status"},
-		"oilscraper_current_price_eur":                {"product_type", "provider", "scope"},
-		"oilscraper_prices_stored_total":              {"provider"},
-		"weatherscraper_api_requests_total":           {"provider", "status"},
-		"weatherscraper_api_request_duration_seconds": {"provider"},
-		"weatherscraper_last_scrape_timestamp":        {"provider"},
-		"weatherscraper_db_operations_total":          {"operation", "status"},
-		"weatherscraper_current_temperature_celsius":  {"provider"},
-		"weatherscraper_observations_stored_total":    {"provider"},
+		"heizsaison_oil_api_requests_total":               {"provider", "status"},
+		"heizsaison_oil_api_request_duration_seconds":     {"provider"},
+		"heizsaison_oil_last_scrape_timestamp":            {"provider"},
+		"heizsaison_oil_db_operations_total":              {"operation", "status"},
+		"heizsaison_oil_current_price_eur":                {"product_type", "provider", "scope"},
+		"heizsaison_oil_prices_stored_total":              {"provider"},
+		"heizsaison_weather_api_requests_total":           {"provider", "status"},
+		"heizsaison_weather_api_request_duration_seconds": {"provider"},
+		"heizsaison_weather_last_scrape_timestamp":        {"provider"},
+		"heizsaison_weather_db_operations_total":          {"operation", "status"},
+		"heizsaison_weather_current_temperature_celsius":  {"provider"},
+		"heizsaison_weather_observations_stored_total":    {"provider"},
 	}
 
 	for name, wantLabels := range want {

@@ -12,9 +12,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/andygrunwald/oil-price-scraper/internal/models"
-	"github.com/andygrunwald/oil-price-scraper/internal/numeric"
-	"github.com/andygrunwald/oil-price-scraper/internal/useragent"
+	"github.com/andygrunwald/heizsaison/internal/models"
+	"github.com/andygrunwald/heizsaison/internal/numeric"
+	"github.com/andygrunwald/heizsaison/internal/useragent"
 )
 
 const (

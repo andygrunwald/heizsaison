@@ -45,17 +45,23 @@ func TestParseStationList(t *testing.T) {
 	if s.Name != "Aach" {
 		t.Errorf("expected name 'Aach', got '%s'", s.Name)
 	}
+	if s.State != "Baden-Württemberg" {
+		t.Errorf("expected state 'Baden-Württemberg', got '%s'", s.State)
+	}
+	if stations[2].Name != "Großenkneten" {
+		t.Errorf("expected name 'Großenkneten', got '%s'", stations[2].Name)
+	}
 
-	// Verify Duisburg station
-	duisburg := stations[5]
-	if duisburg.ID != "02110" {
-		t.Errorf("expected ID 02110, got %s", duisburg.ID)
+	// Verify Heinsberg station
+	heinsberg := stations[5]
+	if heinsberg.ID != "02110" {
+		t.Errorf("expected ID 02110, got %s", heinsberg.ID)
 	}
-	if duisburg.Name != "Duisburg-Baerl" {
-		t.Errorf("expected name 'Duisburg-Baerl', got '%s'", duisburg.Name)
+	if heinsberg.Name != "Heinsberg-Schleiden" {
+		t.Errorf("expected name 'Heinsberg-Schleiden', got '%s'", heinsberg.Name)
 	}
-	if duisburg.State != "Nordrhein-Westfalen" {
-		t.Errorf("expected state 'Nordrhein-Westfalen', got '%s'", duisburg.State)
+	if heinsberg.State != "Nordrhein-Westfalen" {
+		t.Errorf("expected state 'Nordrhein-Westfalen', got '%s'", heinsberg.State)
 	}
 }
 
@@ -120,9 +126,9 @@ func TestFindNearestStation(t *testing.T) {
 		t.Fatalf("findNearestStation error: %v", err)
 	}
 
-	// Should be Duisburg-Baerl (02110) which is the closest active station
-	if nearest.ID != "02110" {
-		t.Errorf("expected nearest station 02110 (Duisburg-Baerl), got %s (%s)", nearest.ID, nearest.Name)
+	// Should be Düsseldorf (01078) which is the closest active station
+	if nearest.ID != "01078" {
+		t.Errorf("expected nearest station 01078 (Düsseldorf), got %s (%s)", nearest.ID, nearest.Name)
 	}
 }
 

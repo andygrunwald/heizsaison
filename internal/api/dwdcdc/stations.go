@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/text/encoding/charmap"
+
 	"github.com/andygrunwald/heizsaison/internal/useragent"
 )
 
@@ -49,7 +51,8 @@ func fetchStationList(ctx context.Context, client *http.Client) ([]Station, erro
 		return nil, fmt.Errorf("station list returned status %d", resp.StatusCode)
 	}
 
-	return parseStationList(resp.Body)
+	// DWD serves the station list as ISO-8859-1 (e.g. "Düsseldorf"); convert to UTF-8.
+	return parseStationList(charmap.ISO8859_1.NewDecoder().Reader(resp.Body))
 }
 
 // parseStationList parses the fixed-width DWD station list file.

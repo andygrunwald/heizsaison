@@ -7,6 +7,7 @@ require (
 	github.com/prometheus/client_golang v1.25.0
 	github.com/rs/zerolog v1.35.1
 	github.com/spf13/cobra v1.10.2
+	golang.org/x/text v0.42.0
 )
 
 require (
@@ -30,7 +31,6 @@ require (
 	golang.org/x/mod v0.41.0 // indirect
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
-	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/tools v0.49.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	honnef.co/go/tools v0.8.1 // indirect

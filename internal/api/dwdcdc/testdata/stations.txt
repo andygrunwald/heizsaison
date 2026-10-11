@@ -1,9 +1,9 @@
 Stations_id von_datum bis_datum Stationshoehe geoBreite geoLaenge Stationsname                             Bundesland
 ----------- --------- --------- ------------- --------- --------- ----------------------------------------- ----------
-00001 19370101 19860630            478     47.8413    8.8493 Aach                                     Baden-WÃ¼rttemberg                        Frei
+00001 19370101 19860630            478     47.8413    8.8493 Aach                                     Baden-Württemberg                        Frei
 00003 18910101 20110331            202     50.7827    6.0941 Aachen                                   Nordrhein-Westfalen                      Frei
-00044 19690101 20260321             44     52.9336    8.2370 GroÃŸenkneten                             Niedersachsen                            Frei
+00044 19690101 20260321             44     52.9336    8.2370 Großenkneten                             Niedersachsen                            Frei
 00078 19610101 20260321             64     52.4853    7.9125 Alfhausen                                Niedersachsen                            Frei
-01078 19510101 20260321             55     51.1344    6.7706 JÃ¼lich                                   Nordrhein-Westfalen                      Frei
+01078 19510101 20260321             55     51.1344    6.7706 Jülich                                   Nordrhein-Westfalen                      Frei
 02110 19210101 20260321             85     51.4025    6.7693 Duisburg-Baerl                           Nordrhein-Westfalen                      Frei
 02564 19510101 20260321            150     51.4055    7.1693 Essen-Bredeney                           Nordrhein-Westfalen                      Frei

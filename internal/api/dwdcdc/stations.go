@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/text/encoding/charmap"
+
 	"github.com/andygrunwald/heizsaison/internal/useragent"
 )
 
@@ -55,8 +57,9 @@ func fetchStationList(ctx context.Context, client *http.Client) ([]Station, erro
 // parseStationList parses the fixed-width DWD station list file.
 // The file has a 2-line header (column names + dashes separator), then data lines.
 // Format is fixed-width with fields at known character positions.
+// The file is ISO-8859-1 encoded (e.g. "Düsseldorf", "Baden-Württemberg").
 func parseStationList(r io.Reader) ([]Station, error) {
-	scanner := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(charmap.ISO8859_1.NewDecoder().Reader(r))
 	// Increase buffer size for potentially long lines
 	scanner.Buffer(make([]byte, 0, 4096), 4096)
 

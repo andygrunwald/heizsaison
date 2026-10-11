@@ -45,6 +45,12 @@ func TestParseStationList(t *testing.T) {
 	if s.Name != "Aach" {
 		t.Errorf("expected name 'Aach', got '%s'", s.Name)
 	}
+	if s.State != "Baden-Württemberg" {
+		t.Errorf("expected state 'Baden-Württemberg', got '%s'", s.State)
+	}
+	if stations[2].Name != "Großenkneten" {
+		t.Errorf("expected name 'Großenkneten', got '%s'", stations[2].Name)
+	}
 
 	// Verify Duisburg station
 	duisburg := stations[5]

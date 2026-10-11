@@ -82,6 +82,32 @@ func (d *DB) ExistsForDate(ctx context.Context, provider, productType string, da
 	return count > 0, nil
 }
 
+// HasPriceForDate checks if any price record exists for the given provider, date, and zip code, regardless of product type.
+func (d *DB) HasPriceForDate(ctx context.Context, provider string, date time.Time, zipCode string) (bool, error) {
+	query := `
+		SELECT COUNT(*) FROM oil_prices
+		WHERE provider = $1 AND price_date = $2
+		AND (zip_code = $3 OR (zip_code IS NULL AND $3 IS NULL))
+	`
+
+	var zipCodePtr *string
+	if zipCode != "" {
+		zipCodePtr = &zipCode
+	}
+
+	var count int
+	err := d.db.QueryRowContext(ctx, query,
+		provider,
+		date.Format("2006-01-02"),
+		zipCodePtr,
+	).Scan(&count)
+	if err != nil {
+		return false, fmt.Errorf("checking existence: %w", err)
+	}
+
+	return count > 0, nil
+}
+
 // GetTotalPricesCount returns the total number of price records in the database.
 func (d *DB) GetTotalPricesCount(ctx context.Context) (int64, error) {
 	var count int64

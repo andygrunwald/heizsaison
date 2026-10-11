@@ -51,15 +51,15 @@ func fetchStationList(ctx context.Context, client *http.Client) ([]Station, erro
 		return nil, fmt.Errorf("station list returned status %d", resp.StatusCode)
 	}
 
-	return parseStationList(resp.Body)
+	// DWD serves the station list as ISO-8859-1 (e.g. "Düsseldorf"); convert to UTF-8.
+	return parseStationList(charmap.ISO8859_1.NewDecoder().Reader(resp.Body))
 }
 
 // parseStationList parses the fixed-width DWD station list file.
 // The file has a 2-line header (column names + dashes separator), then data lines.
 // Format is fixed-width with fields at known character positions.
-// The file is ISO-8859-1 encoded (e.g. "Düsseldorf", "Baden-Württemberg").
 func parseStationList(r io.Reader) ([]Station, error) {
-	scanner := bufio.NewScanner(charmap.ISO8859_1.NewDecoder().Reader(r))
+	scanner := bufio.NewScanner(r)
 	// Increase buffer size for potentially long lines
 	scanner.Buffer(make([]byte, 0, 4096), 4096)
 

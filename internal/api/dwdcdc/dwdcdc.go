@@ -3,7 +3,9 @@ package dwdcdc
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
+	"regexp"
 	"sort"
 	"sync"
 	"time"
@@ -11,6 +13,7 @@ import (
 	"github.com/rs/zerolog"
 
 	"github.com/andygrunwald/heizsaison/internal/models"
+	"github.com/andygrunwald/heizsaison/internal/useragent"
 )
 
 const (
@@ -100,13 +103,14 @@ func (p *Provider) FetchHistoricalWeather(ctx context.Context, lat, lon float64,
 
 	var allRecords []dailyRecord
 
-	// Try historical data first (quality-controlled)
-	histURL := fmt.Sprintf("%s/tageswerte_KL_%s_%s_%s_hist.zip",
-		histBaseURL, station.ID,
-		station.DateFrom.Format("20060102"),
-		station.DateTo.Format("20060102"))
-
-	histData, err := downloadAndExtractZIP(ctx, p.client, histURL)
+	// Try historical data first (quality-controlled).
+	// The filename's end date is the yearly cutoff of the historical archive,
+	// not the station's last observation, so look it up in the directory listing.
+	var histData []byte
+	histFilename, err := fetchHistoricalFilename(ctx, p.client, station.ID)
+	if err == nil {
+		histData, err = downloadAndExtractZIP(ctx, p.client, histBaseURL+"/"+histFilename)
+	}
 	if err != nil {
 		p.logger.Debug().Err(err).Msg("historical data not available, trying recent only")
 	} else {
@@ -176,6 +180,44 @@ func (p *Provider) FetchHistoricalWeather(ctx context.Context, lat, lon float64,
 		Msg("fetched historical weather observations")
 
 	return results, nil
+}
+
+// fetchHistoricalFilename downloads the historical directory listing and returns
+// the ZIP filename for the given station.
+func fetchHistoricalFilename(ctx context.Context, client *http.Client, stationID string) (string, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, histBaseURL+"/", nil)
+	if err != nil {
+		return "", fmt.Errorf("creating historical listing request: %w", err)
+	}
+	req.Header.Set("User-Agent", useragent.Random())
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("fetching historical listing: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("historical listing returned status %d", resp.StatusCode)
+	}
+
+	listing, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("reading historical listing: %w", err)
+	}
+
+	return findHistoricalFilename(listing, stationID)
+}
+
+// findHistoricalFilename returns the historical ZIP filename for the given station
+// from a DWD directory listing.
+func findHistoricalFilename(listing []byte, stationID string) (string, error) {
+	re := regexp.MustCompile(`tageswerte_KL_` + regexp.QuoteMeta(stationID) + `_\d{8}_\d{8}_hist\.zip`)
+	match := re.Find(listing)
+	if match == nil {
+		return "", fmt.Errorf("no historical data file found for station %s", stationID)
+	}
+	return string(match), nil
 }
 
 // ensureStation lazily discovers and caches the nearest DWD station.

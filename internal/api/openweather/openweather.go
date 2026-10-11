@@ -20,6 +20,9 @@ import (
 const (
 	providerName  = "openweather"
 	daySummaryURL = "https://api.openweathermap.org/data/3.0/onecall/day_summary"
+
+	// maxRetries is how often a request is retried after HTTP 429.
+	maxRetries = 3
 )
 
 // daySummaryResponse represents the OpenWeather day_summary API response.
@@ -73,11 +76,13 @@ type windMax struct {
 
 // Provider implements the weatherapi.Provider interface for OpenWeather.
 type Provider struct {
-	logger   zerolog.Logger
-	client   *http.Client
-	apiKey   string
-	minDelay int
-	maxDelay int
+	logger    zerolog.Logger
+	client    *http.Client
+	baseURL   string
+	apiKey    string
+	minDelay  int
+	maxDelay  int
+	retryWait time.Duration
 }
 
 // New creates a new OpenWeather provider.
@@ -88,9 +93,11 @@ func New(logger zerolog.Logger, apiKey string, minDelay, maxDelay int) *Provider
 		client: &http.Client{
 			Timeout: 30 * time.Second,
 		},
-		apiKey:   apiKey,
-		minDelay: minDelay,
-		maxDelay: maxDelay,
+		baseURL:   daySummaryURL,
+		apiKey:    apiKey,
+		minDelay:  minDelay,
+		maxDelay:  maxDelay,
+		retryWait: 30 * time.Second,
 	}
 }
 
@@ -154,7 +161,7 @@ func (p *Provider) FetchHistoricalWeather(ctx context.Context, lat, lon float64,
 }
 
 func (p *Provider) fetchSingleDay(ctx context.Context, lat, lon float64, date string) (models.WeatherResult, []byte, error) {
-	u, err := url.Parse(daySummaryURL)
+	u, err := url.Parse(p.baseURL)
 	if err != nil {
 		return models.WeatherResult{}, nil, fmt.Errorf("parsing URL: %w", err)
 	}
@@ -167,26 +174,29 @@ func (p *Provider) fetchSingleDay(ctx context.Context, lat, lon float64, date st
 	q.Set("units", "metric")
 	u.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
-	if err != nil {
-		return models.WeatherResult{}, nil, fmt.Errorf("creating request: %w", err)
-	}
-	req.Header.Set("User-Agent", useragent.Random())
-	req.Header.Set("Accept", "application/json")
+	// Retry on HTTP 429 with exponential backoff
+	var statusCode int
+	var body []byte
+	for attempt := 0; ; attempt++ {
+		statusCode, body, err = p.doRequest(ctx, u.String())
+		if err != nil {
+			return models.WeatherResult{}, nil, err
+		}
+		if statusCode != http.StatusTooManyRequests || attempt >= maxRetries {
+			break
+		}
 
-	resp, err := p.client.Do(req)
-	if err != nil {
-		return models.WeatherResult{}, nil, fmt.Errorf("executing request: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return models.WeatherResult{}, nil, fmt.Errorf("reading response body: %w", err)
+		wait := p.retryWait << attempt
+		p.logger.Warn().Str("date", date).Dur("wait", wait).Int("attempt", attempt+1).Msg("rate limited, retrying")
+		select {
+		case <-ctx.Done():
+			return models.WeatherResult{}, nil, ctx.Err()
+		case <-time.After(wait):
+		}
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return models.WeatherResult{}, nil, fmt.Errorf("unexpected status %d: %s", resp.StatusCode, string(body))
+	if statusCode != http.StatusOK {
+		return models.WeatherResult{}, nil, fmt.Errorf("unexpected status %d: %s", statusCode, string(body))
 	}
 
 	var apiResp daySummaryResponse
@@ -196,6 +206,28 @@ func (p *Provider) fetchSingleDay(ctx context.Context, lat, lon float64, date st
 
 	result := p.mapResponse(apiResp, lat, lon)
 	return result, body, nil
+}
+
+func (p *Provider) doRequest(ctx context.Context, u string) (int, []byte, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return 0, nil, fmt.Errorf("creating request: %w", err)
+	}
+	req.Header.Set("User-Agent", useragent.Random())
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return 0, nil, fmt.Errorf("executing request: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return 0, nil, fmt.Errorf("reading response body: %w", err)
+	}
+
+	return resp.StatusCode, body, nil
 }
 
 func (p *Provider) mapResponse(resp daySummaryResponse, lat, lon float64) models.WeatherResult {

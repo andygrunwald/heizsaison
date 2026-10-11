@@ -1,10 +1,14 @@
 package openweather
 
 import (
+	"context"
 	"encoding/json"
 	"math"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/rs/zerolog"
 
@@ -118,6 +122,52 @@ func TestWindSpeedConversion(t *testing.T) {
 
 	result := p.mapResponse(resp, 51.4556, 6.7623)
 	assertFloat64Ptr(t, "WindSpeedMaxKmh", result.WindSpeedMaxKmh, 36.0)
+}
+
+func TestFetchSingleDayRetriesOn429(t *testing.T) {
+	requests := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests++
+		if requests <= 2 {
+			w.WriteHeader(http.StatusTooManyRequests)
+			return
+		}
+		_, _ = w.Write([]byte(`{"date": "2024-03-22", "temperature": {"min": 8.1, "max": 15.2}}`))
+	}))
+	defer srv.Close()
+
+	p := New(zerolog.New(os.Stderr).Level(zerolog.Disabled), "test-key", 1, 5)
+	p.baseURL = srv.URL
+	p.retryWait = time.Millisecond
+
+	result, _, err := p.fetchSingleDay(context.Background(), 51.4556, 6.7623, "2024-03-22")
+	if err != nil {
+		t.Fatalf("expected success after retries, got %v", err)
+	}
+	if requests != 3 {
+		t.Errorf("expected 3 requests, got %d", requests)
+	}
+	assertFloat64Ptr(t, "TemperatureMinC", result.TemperatureMinC, 8.1)
+}
+
+func TestFetchSingleDayGivesUpAfterMaxRetries(t *testing.T) {
+	requests := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests++
+		w.WriteHeader(http.StatusTooManyRequests)
+	}))
+	defer srv.Close()
+
+	p := New(zerolog.New(os.Stderr).Level(zerolog.Disabled), "test-key", 1, 5)
+	p.baseURL = srv.URL
+	p.retryWait = time.Millisecond
+
+	if _, _, err := p.fetchSingleDay(context.Background(), 51.4556, 6.7623, "2024-03-22"); err == nil {
+		t.Fatal("expected error after exhausting retries")
+	}
+	if requests != maxRetries+1 {
+		t.Errorf("expected %d requests, got %d", maxRetries+1, requests)
+	}
 }
 
 func assertFloat64Ptr(t *testing.T, name string, got *float64, want float64) {

@@ -40,6 +40,10 @@ func backfillCmd() *cobra.Command {
 				return fmt.Errorf("--from is required")
 			}
 
+			if cfg.Backfill.Provider == "openweather" && cfg.Backfill.MinDelay < 1 {
+				return fmt.Errorf("--min-delay must be at least 1 for OpenWeather (60 calls/minute limit)")
+			}
+
 			// Override config from flags
 			if visualCrossingAPIKey != "" {
 				cfg.VisualCrossingAPIKey = visualCrossingAPIKey

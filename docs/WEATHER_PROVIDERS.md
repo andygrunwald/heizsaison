@@ -335,7 +335,7 @@ Parameters: `lat={LAT}&lon={LON}&date={YYYY-MM-DD}&appid={API_KEY}&units=metric`
 - Mean temperature is calculated as `(min + max) / 2` since the API does not provide a true daily mean
 - The `units=metric` parameter ensures temperatures in °C and wind in m/s
 - Wind speed is converted from m/s to km/h (×3.6) for consistency with other providers
-- Backfill operations use `--min-delay` and `--max-delay` flags for rate limiting (random sleep between requests)
+- Backfill operations use `--min-delay` and `--max-delay` flags for rate limiting (random sleep between requests). `--min-delay` must be at least `1` to stay under the 60 calls/minute limit
 - A warning is logged if the backfill date range exceeds 900 days for rate-limited providers
 
 ### Known Limitations

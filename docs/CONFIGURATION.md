@@ -101,7 +101,7 @@ docker run -d \
 
 ## Gotchas
 
-- **`--min-delay` and `--max-delay` only affect OpenWeather.** It is the one provider that backfills day by day and sleeps between requests. Every other provider fetches the whole range in a single call, so both scrapers accept the two values and never use them.
+- **`--min-delay` and `--max-delay` only affect OpenWeather.** It is the one provider that backfills day by day and sleeps between requests. Every other provider fetches the whole range in a single call, so both scrapers accept the two values and never use them. For OpenWeather, `--min-delay` must be at least `1` to stay under the 60 calls/minute limit; `backfill` rejects smaller values.
 - **`--zip-code` is required even without Hoyer.** `heizsaison-oil` rejects an empty zip code on `run`, `scrape` and `backfill`, whether or not the Hoyer provider is enabled.
 - **The coordinate check is an AND.** `heizsaison-weather` only complains when latitude *and* longitude are both `0`, so `--latitude 51.4556` on its own passes validation and silently observes longitude `0`.
 - **`STORE_RAW_RESPONSE` is matched case-insensitively against `true`.** Anything else, `1` included, means false.

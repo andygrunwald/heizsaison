@@ -95,6 +95,11 @@ func (p *Provider) PriceScope() models.PriceScope {
 	return models.PriceScopeLocal
 }
 
+// ZipCode returns the zip code Hoyer prices are fetched for.
+func (p *Provider) ZipCode() string {
+	return p.zipCode
+}
+
 // FetchCurrentPrices fetches current prices from Hoyer for all available products.
 func (p *Provider) FetchCurrentPrices(ctx context.Context) ([]models.PriceResult, error) {
 	// Hoyer API: /rest/heatingoil/<PLZ>/<Menge>/<Abladestellen>

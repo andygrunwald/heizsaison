@@ -9,7 +9,6 @@ import (
 
 	"github.com/andygrunwald/heizsaison/internal/api"
 	"github.com/andygrunwald/heizsaison/internal/database"
-	"github.com/andygrunwald/heizsaison/internal/models"
 )
 
 // PrometheusMetrics defines the interface for recording Prometheus metrics.
@@ -351,21 +350,7 @@ func (s *Scraper) HasScrapedToday(ctx context.Context, providerName string) (boo
 	// Get today's date
 	today := time.Now().Truncate(24 * time.Hour)
 
-	// Check for each possible product type
-	// For simplicity, we'll just check if any record exists for today
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	// Use the provider's standard product type or check the database
-	zipCode := ""
-	if provider.PriceScope() == models.PriceScopeLocal {
-		// For local providers, we'd need to know the zip code
-		// This is a simplification - in practice you'd want to pass this
-		return false, nil
-	}
-
-	// Check if a record exists for today
-	exists, err := s.db.ExistsForDate(ctx, providerName, "standard", today, zipCode)
+	exists, err := s.db.HasPriceForDate(ctx, providerName, today, provider.ZipCode())
 	if err != nil {
 		return false, err
 	}

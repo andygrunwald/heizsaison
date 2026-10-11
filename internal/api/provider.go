@@ -36,6 +36,9 @@ type Provider interface {
 
 	// PriceScope returns whether the price is local (zip code) or nationwide.
 	PriceScope() models.PriceScope
+
+	// ZipCode returns the zip code prices are fetched for ("" for national providers).
+	ZipCode() string
 }
 
 // WeatherProvider defines the interface for weather API providers.

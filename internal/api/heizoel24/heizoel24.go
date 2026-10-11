@@ -73,6 +73,11 @@ func (p *Provider) PriceScope() models.PriceScope {
 	return models.PriceScopeNational
 }
 
+// ZipCode returns an empty string as HeizOel24 provides nationwide prices.
+func (p *Provider) ZipCode() string {
+	return ""
+}
+
 // FetchCurrentPrices fetches today's price from HeizOel24.
 func (p *Provider) FetchCurrentPrices(ctx context.Context) ([]models.PriceResult, error) {
 	now := time.Now()

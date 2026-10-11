@@ -347,8 +347,8 @@ Parameters: `lat={LAT}&lon={LON}&date={YYYY-MM-DD}&appid={API_KEY}&units=metric`
 - **No sunshine duration**: The day_summary endpoint does not provide sunshine duration data. This field will always be `NULL`.
 - **No wind gust data**: The endpoint does not provide separate wind gust speed. Only maximum wind speed is available.
 - **Calculated mean temperature**: The API does not provide a true daily mean temperature. It is calculated as `(min + max) / 2`, which can differ from the standard meteorological daily mean (typically based on multiple readings throughout the day).
-- **Rate limiting via sleep**: Backfill uses random sleep delays between requests (`--min-delay` / `--max-delay`). This is simple but not adaptive — it cannot detect or respond to 429 rate limit responses.
-- **No retry on individual day failures**: If fetching a single day fails during backfill, the day is skipped with an error log. It is not retried.
+- **Rate limiting via sleep**: Backfill uses random sleep delays between requests (`--min-delay` / `--max-delay`). An HTTP 429 response is retried up to 3 times with exponential backoff (30s, 60s, 120s) before the day is given up.
+- **No retry on other failures**: If fetching a single day fails for any reason other than HTTP 429, or still returns 429 after all retries, the day is skipped with an error log.
 
 ---
 
